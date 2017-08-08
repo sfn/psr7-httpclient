@@ -36,6 +36,31 @@ $request = (new Zend\Diactoros\Request())
 $response = $client->send($request); // Return a $config['responseclass'] object
 ```
 
+#### Helper methods for REST API
+There are `get()`, `post()`, `put()`, `delete()` and `patch()` helper methods.
+In order to use those, you must specify in your client configuration also a
+`Psr\Http\Message\RequestInterface` and a `Psr\Http\Message\UriInterface`
+implementation.
+
+```php
+$config = [
+    'responseclass' => Zend\Diactoros\Response::class,
+    'requestclass'  => Zend\Diactoros\Request::class,
+    'uriclass'      => Zend\Diactoros\Uri::class
+];
+$client = Sfn\HttpClient\ClientFactory::make($config);
+
+// GET request
+$response = $client->get('http://api.example.com/path');
+
+// POST request
+$response = $client->post(
+    'http://api.example.com/path',
+    'body' => http_build_query(['foo' => 'bar'])
+);
+```
+
+
 ## To-Do
 * Cookies support
 * SSL authentication
