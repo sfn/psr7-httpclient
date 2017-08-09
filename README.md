@@ -56,7 +56,7 @@ $response = $client->get('http://api.example.com/path');
 // POST request
 $response = $client->post(
     'http://api.example.com/path',
-    'body' => http_build_query(['foo' => 'bar'])
+    ['body' => http_build_query(['foo' => 'bar'])]
 );
 ```
 
