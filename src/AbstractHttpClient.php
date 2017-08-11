@@ -180,7 +180,7 @@ abstract class AbstractHttpClient
         }
         if (
             !isset($this->config['requestclass']) ||
-            !new $this->config['responseclass'] instanceof RequestInterface
+            !new $this->config['requestclass'] instanceof RequestInterface
         ) {
             throw new \InvalidArgumentException(
                 'You must specify a RequestInterface implementation'

@@ -30,7 +30,7 @@ class UriHelper
         }
         else {
             $path = rtrim($base->getPath(), '/');
-            $path .= '/'.$add->getPath();
+            $path .= '/'.ltrim($add->getPath(), '/');
             $mergeduri = $mergeduri->withPath($path);
             $mergeduri = $mergeduri->withQuery($add->getQuery());
             $mergeduri = $mergeduri->withFragment($add->getFragment());
