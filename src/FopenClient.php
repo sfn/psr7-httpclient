@@ -20,6 +20,7 @@ use Sfn\HttpClient\Exception\ServerException;
  */
 class FopenClient extends AbstractHttpClient
 {
+    /** @var array $httpContex */
     private $httpContex;
 
     /**

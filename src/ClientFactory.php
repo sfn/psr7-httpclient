@@ -27,7 +27,9 @@ class ClientFactory {
             $client = new FopenClient($config);
         } else {
             throw new \RuntimeException(
-                "You need php-curl installed or allow_url_fopen=true", 0);
+                "You need php-curl installed or allow_url_fopen=true",
+                0
+            );
         }
         return $client;
     }

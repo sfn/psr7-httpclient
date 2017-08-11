@@ -12,8 +12,15 @@ use Psr\Http\Message\RequestInterface;
 
 class ConnectionException extends \Exception
 {
+    /** @var RequestInterface $request */
     private $request;
 
+    /**
+     * @param string $message
+     * @param int $code
+     * @param RequestInterface $request
+     * @param \Exception|null $previous
+     */
     public function __construct(
         $message,
         $code,

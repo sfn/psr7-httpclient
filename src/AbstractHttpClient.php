@@ -14,7 +14,9 @@ use Psr\Http\Message\RequestInterface;
 
 abstract class AbstractHttpClient
 {
+    /** @var string */
     const VERSION = '0.1.0';
+    /** @var array */
     protected $config;
 
     /**
@@ -39,15 +41,7 @@ abstract class AbstractHttpClient
         ];
 
         $this->config = array_merge($this->config, $config);
-
-        if (
-            !isset($this->config['responseclass']) ||
-            !new $this->config['responseclass'] instanceof ResponseInterface
-        ) {
-            throw new \InvalidArgumentException(
-                'You must specify a ResponseInterface implementation'
-            );
-        }
+        $this->checkPsr7();
     }
 
     /**
@@ -168,5 +162,35 @@ abstract class AbstractHttpClient
             $temp[] = $key.': '.implode('; ',$val);
         }
         return $temp;
+    }
+
+    /**
+     * Throws exceptions for non valid PSR-7 implementations
+     */
+    private function checkPsr7() {
+        if (
+            !isset($this->config['responseclass']) ||
+            !new $this->config['responseclass'] instanceof ResponseInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'You must specify a ResponseInterface implementation'
+            );
+        }
+        if (
+            !isset($this->config['requestclass']) ||
+            !new $this->config['responseclass'] instanceof RequestInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'You must specify a RequestInterface implementation'
+            );
+        }
+        if (
+            !isset($this->config['uriclass']) ||
+            !new $this->config['uriclass'] instanceof UriInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'You must specify a UriInterface implementation'
+            );
+        }
     }
 }
