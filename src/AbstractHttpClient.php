@@ -42,6 +42,7 @@ abstract class AbstractHttpClient
 
         $this->config = array_merge($this->config, $config);
         $this->checkPsr7();
+        $this->checkBaseUri();
     }
 
     /**
@@ -167,7 +168,8 @@ abstract class AbstractHttpClient
     /**
      * Throws exceptions for non valid PSR-7 implementations
      */
-    private function checkPsr7() {
+    private function checkPsr7()
+    {
         if (
             !isset($this->config['responseclass']) ||
             !new $this->config['responseclass'] instanceof ResponseInterface
@@ -191,6 +193,25 @@ abstract class AbstractHttpClient
             throw new \InvalidArgumentException(
                 'You must specify a UriInterface implementation'
             );
+        }
+    }
+
+    /**
+     * Throws exceptions for non valid base uri
+     */
+    private function checkBaseUri()
+    {
+        if(isset($this->config['baseuri'])){
+            $uri = $this->config['baseuri'];
+
+            if (is_string($uri)) {
+                $this->config['baseuri'] = new $this->config['uriclass']($uri);
+            } elseif (!$uri instanceof UriInterface) {
+                throw new \InvalidArgumentException(sprintf(
+                    'URI must be a string or a UriInterface instance; received "%s"',
+                    (is_object($uri) ? get_class($uri) : gettype($uri))
+                ));
+            }
         }
     }
 }

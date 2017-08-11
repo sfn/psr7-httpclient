@@ -48,7 +48,17 @@ class CurlClient extends AbstractHttpClient
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        $this->setOption(CURLOPT_URL, (string) $request->getUri());
+        if (isset($this->config['baseuri'])) {
+            $uri = UriHelper::merge(
+                $this->config['baseuri'],
+                $request->getUri()
+            );
+        }
+        else {
+            $uri = $request->getUri();
+        }
+        
+        $this->setOption(CURLOPT_URL, (string) $uri);
         $this->setOption(CURLOPT_CUSTOMREQUEST, $request->getMethod());
         $this->setOption(CURLOPT_POSTFIELDS, (string) $request->getBody());
         $this->setOption(CURLINFO_HEADER_OUT, true);
