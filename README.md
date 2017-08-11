@@ -54,6 +54,21 @@ $response = $client->post(
 );
 ```
 
+#### Base URI
+You can also specify a base uri in the client configuration.
+```php
+$config = [
+    'responseclass' => Zend\Diactoros\Response::class,
+    'requestclass'  => Zend\Diactoros\Request::class,
+    'uriclass'      => Zend\Diactoros\Uri::class,
+    'baseuri'       => 'http://api.example.com'
+];
+$client = Sfn\HttpClient\ClientFactory::make($config);
+
+// GET request
+$response = $client->get('path'); // GET http://api.example.com/path
+```
+
 
 ## To-Do
 * Cookies support
