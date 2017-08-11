@@ -9,7 +9,7 @@
 namespace Sfn\HttpClient;
 
 /**
- * Factory method for RestClient
+ * Factory method for HttpClient
  * @package Sfn\HttpClient
  */
 class ClientFactory {
