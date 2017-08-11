@@ -17,7 +17,8 @@ backend, otherwise it create a client who send request via php's
 `ClientFactory::make()` accepts an associative array with the client
 configuration. You must specify at least a `Psr\Http\Message\ResponseInterface`,
 a `Psr\Http\Message\RequestInterface` and a `Psr\Http\Message\UriInterface`
-implementation.
+implementation. [Here](ClientConfiguration.md) you can find the complete list of
+parameters in you can set in the configuration array.
 
 ```php
 $config = [
