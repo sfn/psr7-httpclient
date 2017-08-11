@@ -16,11 +16,12 @@ class ConnectionException extends \Exception
 
     public function __construct(
         $message,
+        $code,
         RequestInterface $request,
         \Exception $previous = null
     ) {
         $this->request = $request;
-        parent::__construct($message, 0, $previous);
+        parent::__construct($message, $code, $previous);
     }
 
     /**

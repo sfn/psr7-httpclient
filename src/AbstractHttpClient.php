@@ -31,7 +31,8 @@ abstract class AbstractHttpClient
     public function __construct(array $config)
     {
         $this->config = [
-            'useragent'      => 'Sfn-HttpClient/'.self::VERSION.' (https://github.com/sfn/psr7-httpclient)',
+            'useragent'      => 'Sfn-HttpClient/'.self::VERSION.
+                                ' (https://github.com/sfn/psr7-httpclient)',
             'followlocation' => false,
             'maxredirects'   => 0,
             'timeout'        => ini_get('default_socket_timeout'),
