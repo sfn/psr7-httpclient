@@ -20,6 +20,7 @@ use Sfn\HttpClient\Exception\ServerException;
  */
 class FopenClient extends AbstractHttpClient
 {
+    /** @var array $httpContex */
     private $httpContex;
 
     /**
@@ -47,11 +48,10 @@ class FopenClient extends AbstractHttpClient
         $this->httpContex['http']['content'] = (string) $request->getBody();
         $this->httpContex['http']['header']  =
             implode("\r\n", $this->parseHeader($request->getHeaders()));
-
         $contex = stream_context_create($this->httpContex);
         $body = @file_get_contents((string) $request->getUri(), false, $contex);
         if ($body===false) {
-            throw new ConnectionException('HTTP request failed', $request);
+            throw new ConnectionException('HTTP request failed', -1, $request);
         }
         sscanf($http_response_header[0], 'HTTP/%*d.%*d %d', $status);
 

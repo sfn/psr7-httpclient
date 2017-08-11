@@ -13,9 +13,18 @@ use Psr\Http\Message\ResponseInterface;
 
 class ResponseException extends \Exception
 {
+    /** @var RequestInterface $request */
     private $request;
+    /** @var ResponseInterface $response */
     private $response;
 
+    /**
+     * @param string $message
+     * @param int $code
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param \Exception|null $previous
+     */
     public function __construct(
         $message,
         $code,

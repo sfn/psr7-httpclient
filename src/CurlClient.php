@@ -20,6 +20,7 @@ use Sfn\HttpClient\Exception\ServerException;
  */
 class CurlClient extends AbstractHttpClient
 {
+    /** @var resource $curl cURL handle */
     private $curl;
 
     /**
@@ -56,10 +57,14 @@ class CurlClient extends AbstractHttpClient
             $this->parseHeader($request->getHeaders())
         );
 
-        $res      = curl_exec($this->curl);
+        $res = curl_exec($this->curl);
 
         if (curl_errno($this->curl)!=CURLE_OK) {
-            throw new ConnectionException(curl_error($this->curl), $request);
+            throw new ConnectionException(
+                curl_error($this->curl),
+                curl_errno($this->curl),
+                $request
+            );
         }
 
         $info     = curl_getinfo($this->curl);
