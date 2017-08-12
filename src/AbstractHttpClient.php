@@ -220,10 +220,10 @@ abstract class AbstractHttpClient
      * @param RequestInterface $request
      * @return RequestInterface
      */
-    private function setDefaultHeaders(RequestInterface $request): RequestInterface
+    protected function setDefaultHeaders(RequestInterface $request): RequestInterface
     {
         foreach ($this->config['headers'] as $header => $val) {
-            if ($request->getHeader($header)=='') {
+            if (empty($request->getHeader($header))) {
                 $request = $request->withHeader($header, $val);
             }
         }
