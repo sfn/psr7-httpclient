@@ -145,7 +145,7 @@ abstract class AbstractHttpClient
 
         if (isset($options['headers']) && is_array($options['headers'])) {
             foreach ($options['headers'] as $header => $val) {
-                $request = $request->withAddedHeader($header, $val);
+                $request = $request->withHeader($header, $val);
             }
         }
 
@@ -213,5 +213,20 @@ abstract class AbstractHttpClient
                 ));
             }
         }
+    }
+
+    /**
+     * Set request default headers
+     * @param RequestInterface $request
+     * @return RequestInterface
+     */
+    private function setDefaultHeaders(RequestInterface $request): RequestInterface
+    {
+        foreach ($this->config['headers'] as $header => $val) {
+            if ($request->getHeader($header)=='') {
+                $request = $request->withHeader($header, $val);
+            }
+        }
+        return $request;
     }
 }

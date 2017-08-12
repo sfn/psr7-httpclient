@@ -54,6 +54,8 @@ class FopenClient extends AbstractHttpClient
             $uri = $request->getUri();
         }
 
+        $request = $this->setDefaultHeaders($request);
+
         $this->httpContex['http']['method']  = $request->getMethod();
         $this->httpContex['http']['content'] = (string) $request->getBody();
         $this->httpContex['http']['header']  =

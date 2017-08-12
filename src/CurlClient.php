@@ -56,8 +56,11 @@ class CurlClient extends AbstractHttpClient
         }
         else {
             $uri = $request->getUri();
+        
         }
         
+        $request = $this->setDefaultHeaders($request);
+
         $this->setOption(CURLOPT_URL, (string) $uri);
         $this->setOption(CURLOPT_CUSTOMREQUEST, $request->getMethod());
         $this->setOption(CURLOPT_POSTFIELDS, (string) $request->getBody());
