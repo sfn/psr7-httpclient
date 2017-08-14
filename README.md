@@ -5,7 +5,7 @@ It is still a work-in-progress but, more or less, it works.
 ## Requirements
 * PHP 7.0 or higher
 * `php-curl` or `allow_url_fopen` set to true
-* A [PSR7](http://www.php-fig.org/psr/psr-7/) implementation Only tested with [zend-diactoros](https://github.com/zendframework/zend-diactoros))
+* A [PSR7](http://www.php-fig.org/psr/psr-7/) implementation (Only tested with [zend-diactoros](https://github.com/zendframework/zend-diactoros))
 
 ## Usage
 #### Create a client instance
