@@ -17,7 +17,8 @@ backend, otherwise it create a client who send request via php's
 `ClientFactory::make()` accepts an associative array with the client
 configuration. You must specify at least a `Psr\Http\Message\ResponseInterface`,
 a `Psr\Http\Message\RequestInterface` and a `Psr\Http\Message\UriInterface`
-implementation.
+implementation. [Here](doc/PARAMETERS.md#client-configuration-parameters) you can find the complete list of
+parameters in you can set in the configuration array.
 
 ```php
 $config = [
@@ -42,6 +43,8 @@ $response = $client->send($request); // Return a $config['responseclass'] object
 
 #### Helper methods for REST API
 There are `get()`, `post()`, `put()`, `delete()` and `patch()` helper methods.
+You can pass a second parameter, with an array of options.
+[Here](doc/PARAMETERS.md#request-parameters) you can find a complete list of request parameters.
 
 ```php
 // GET request
@@ -52,6 +55,21 @@ $response = $client->post(
     'http://api.example.com/path',
     ['body' => http_build_query(['foo' => 'bar'])]
 );
+```
+
+#### Base URI
+You can also specify a base uri in the client configuration.
+```php
+$config = [
+    'responseclass' => Zend\Diactoros\Response::class,
+    'requestclass'  => Zend\Diactoros\Request::class,
+    'uriclass'      => Zend\Diactoros\Uri::class,
+    'baseuri'       => 'http://api.example.com'
+];
+$client = Sfn\HttpClient\ClientFactory::make($config);
+
+// GET request
+$response = $client->get('path'); // GET http://api.example.com/path
 ```
 
 

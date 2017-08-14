@@ -44,12 +44,24 @@ class FopenClient extends AbstractHttpClient
      */
     public function send(RequestInterface $request): ResponseInterface
     {
+        if (isset($this->config['baseuri'])) {
+            $uri = UriHelper::merge(
+                $this->config['baseuri'],
+                $request->getUri()
+            );
+        }
+        else {
+            $uri = $request->getUri();
+        }
+
+        $request = $this->setDefaultHeaders($request);
+
         $this->httpContex['http']['method']  = $request->getMethod();
         $this->httpContex['http']['content'] = (string) $request->getBody();
         $this->httpContex['http']['header']  =
             implode("\r\n", $this->parseHeader($request->getHeaders()));
         $contex = stream_context_create($this->httpContex);
-        $body = @file_get_contents((string) $request->getUri(), false, $contex);
+        $body = @file_get_contents((string) $uri, false, $contex);
         if ($body===false) {
             throw new ConnectionException('HTTP request failed', -1, $request);
         }
