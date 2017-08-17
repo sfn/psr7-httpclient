@@ -5,6 +5,13 @@
     "keywords": ["http", "client", "psr-7", "psr-17"],
     "homepage": "https://github.com/sfn/psr7-httpclient",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Sfn",
+            "homepage": "https://github.com/sfn",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^7.0",
         "psr/http-message": "~1.0",
