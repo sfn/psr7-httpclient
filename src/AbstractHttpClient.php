@@ -41,6 +41,7 @@ abstract class AbstractHttpClient
             'followlocation' => false,
             'maxredirects'   => 0,
             'timeout'        => ini_get('default_socket_timeout'),
+            'headers'        => []
         ];
 
         $this->config = array_merge($this->config, $config);
