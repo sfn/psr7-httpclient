@@ -34,7 +34,7 @@ for PSR-17 Http Factory interfaces.
 
 ## Installation
 ```
-composer install sfn/httpclient
+composer require sfn/httpclient
 ```
 
 #### Zend Diactoros support
