@@ -1,4 +1,7 @@
 # PSR7 HttpClient
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/sfn/psr7-httpclient/master/LICENSE)
+[![PHP](https://img.shields.io/badge/PHP-7.0%2B-777bb4.svg)](http://www.php.net/)
+
 Just a simple and little PSR7 client.
 It is still a work-in-progress but, more or less, it works.
 
@@ -17,7 +20,7 @@ backend, otherwise it create a client who send request via php's
 `ClientFactory::make()` accepts an associative array with the client
 configuration. You must specify at least a `Psr\Http\Message\ResponseInterface`,
 a `Psr\Http\Message\RequestInterface` and a `Psr\Http\Message\UriInterface`
-implementation. [Here](doc/PARAMETERS.md#client-configuration-parameters) you can find the complete list of
+implementation. [Here](PARAMETERS.md#client-configuration-parameters) you can find the complete list of
 parameters in you can set in the configuration array.
 
 ```php
@@ -44,7 +47,7 @@ $response = $client->send($request); // Return a $config['responseclass'] object
 #### Helper methods for REST API
 There are `get()`, `post()`, `put()`, `delete()` and `patch()` helper methods.
 You can pass a second parameter, with an array of options.
-[Here](doc/PARAMETERS.md#request-parameters) you can find a complete list of request parameters.
+[Here](PARAMETERS.md#request-parameters) you can find a complete list of request parameters.
 
 ```php
 // GET request
