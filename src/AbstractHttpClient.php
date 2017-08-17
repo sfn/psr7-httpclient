@@ -11,6 +11,9 @@ namespace Sfn\HttpClient;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
+use Interop\Http\Factory\ResponseFactoryInterface;
+use Interop\Http\Factory\RequestFactoryInterface;
+use Interop\Http\Factory\UriFactoryInterface;
 
 abstract class AbstractHttpClient
 {
@@ -41,7 +44,7 @@ abstract class AbstractHttpClient
         ];
 
         $this->config = array_merge($this->config, $config);
-        $this->checkPsr7();
+        $this->checkHttpFactories();
         $this->checkBaseUri();
     }
 
@@ -113,20 +116,12 @@ abstract class AbstractHttpClient
         array $options=[]
     ): ResponseInterface
     {
-        if (is_string($uri)) {
-            $uri = new $this->config['uriclass']($uri);
-        } elseif (!$uri instanceof UriInterface) {
-            throw new \InvalidArgumentException(sprintf(
-                'URI must be a string or a UriInterface instance; received "%s"',
-                (is_object($uri) ? get_class($uri) : gettype($uri))
-            ));
+        if (!$uri instanceof UriInterface) {
+            $uri = $this->config['urifactory']->createUri($uri);
         }
 
-        $request = (new $this->config['requestclass']())
-            ->withMethod($method)
-            ->withUri($uri);
+        $request = $this->config['requestfactory']->createRequest($method, $uri);
         $request = $this->setRequestOptions($request, $options);
-
         return $this->send($request);
     }
 
@@ -166,32 +161,34 @@ abstract class AbstractHttpClient
     }
 
     /**
-     * Throws exceptions for non valid PSR-7 implementations
+     * Throws exceptions for non valid HTTP Factory
      */
-    private function checkPsr7()
+    public function checkHttpFactories()
     {
         if (
-            !isset($this->config['responseclass']) ||
-            !new $this->config['responseclass'] instanceof ResponseInterface
+            !isset($this->config['responsefactory']) ||
+            !$this->config['responsefactory'] instanceof ResponseFactoryInterface
         ) {
             throw new \InvalidArgumentException(
-                'You must specify a ResponseInterface implementation'
+                "You must provide a valid ResponseFactoryInterface"
             );
         }
+
         if (
-            !isset($this->config['requestclass']) ||
-            !new $this->config['requestclass'] instanceof RequestInterface
+            !isset($this->config['requestfactory']) ||
+            !$this->config['requestfactory'] instanceof RequestFactoryInterface
         ) {
             throw new \InvalidArgumentException(
-                'You must specify a RequestInterface implementation'
+                "You must provide a valid RequestFactoryInterface"
             );
         }
+
         if (
-            !isset($this->config['uriclass']) ||
-            !new $this->config['uriclass'] instanceof UriInterface
+            !isset($this->config['urifactory']) ||
+            !$this->config['urifactory'] instanceof UriFactoryInterface
         ) {
             throw new \InvalidArgumentException(
-                'You must specify a UriInterface implementation'
+                "You must provide a valid UriFactoryInterface"
             );
         }
     }
@@ -205,7 +202,8 @@ abstract class AbstractHttpClient
             $uri = $this->config['baseuri'];
 
             if (is_string($uri)) {
-                $this->config['baseuri'] = new $this->config['uriclass']($uri);
+                $this->config['baseuri'] =
+                    $this->config['urifactory']->createUri($uri);
             } elseif (!$uri instanceof UriInterface) {
                 throw new \InvalidArgumentException(sprintf(
                     'URI must be a string or a UriInterface instance; received "%s"',

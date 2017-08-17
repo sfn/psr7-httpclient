@@ -53,12 +53,12 @@ class CurlClient extends AbstractHttpClient
                 $this->config['baseuri'],
                 $request->getUri()
             );
+            $request = $request->withUri($uri);
         }
         else {
             $uri = $request->getUri();
-        
         }
-        
+
         $request = $this->setDefaultHeaders($request);
 
         $this->setOption(CURLOPT_URL, (string) $uri);
@@ -85,7 +85,7 @@ class CurlClient extends AbstractHttpClient
         $body     = substr($res, strlen($header));
         $header   = preg_split("/\\r\\n|\\r|\\n/", trim($header));
 
-        $response = new $this->config['responseclass']();
+        $response = $this->config['responsefactory']->createResponse();
         $response = $response->withStatus($info['http_code']);
 
         $lines = count($header);

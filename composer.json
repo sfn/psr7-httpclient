@@ -1,0 +1,30 @@
+{
+    "name": "sfn/httpclient",
+    "type": "library",
+    "description": "A simple PSR-7 client",
+    "keywords": ["http", "client", "psr-7", "psr-17"],
+    "homepage": "https://github.com/sfn/psr7-httpclient",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sfn",
+            "homepage": "https://github.com/sfn",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.0",
+        "psr/http-message": "~1.0",
+        "http-interop/http-factory": "^0.3.0",
+    },
+    "autoload": {
+      "psr-4": {
+        "Sfn\\HttpClient\\": "src/"
+      }
+    },
+    "suggest": {
+        "http-interop/http-factory-diactoros": "^0.3.0",
+        "http-interop/http-factory-guzzle": "^0.3.1",
+        "http-interop/http-factory-slim": "^0.3.0"
+    }
+}

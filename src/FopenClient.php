@@ -49,6 +49,7 @@ class FopenClient extends AbstractHttpClient
                 $this->config['baseuri'],
                 $request->getUri()
             );
+            $request = $request->withUri($uri);
         }
         else {
             $uri = $request->getUri();
@@ -67,7 +68,7 @@ class FopenClient extends AbstractHttpClient
         }
         sscanf($http_response_header[0], 'HTTP/%*d.%*d %d', $status);
 
-        $response = new $this->config['responseclass']();
+        $response = $this->config['responsefactory']->createResponse();
         $response = $response->withStatus($status);
 
         $lines = count($http_response_header);
