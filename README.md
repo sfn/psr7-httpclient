@@ -1,4 +1,6 @@
 # Sfn HttpClient
+
+[![Latest Version](https://img.shields.io/packagist/v/sfn/httpclient.svg)](https://packagist.org/packages/sfn/httpclient)
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/sfn/psr7-httpclient/master/LICENSE)
 [![PHP](https://img.shields.io/badge/PHP-7.0%2B-777bb4.svg)](http://www.php.net/)
 
@@ -17,13 +19,14 @@ It is still a work-in-progress but, more or less, it works.
     * [Methods for REST API](#helper-methods-for-rest-api)
     * [Base URI](#base-uri)
 * [To-do](#to-do)
+* [License](#license)
 
 ## Requirements
 * PHP 7.0 or higher
 * `php-curl` or `allow_url_fopen` set to true
 * A [PSR7](http://www.php-fig.org/psr/psr-7/) implementation.
 
-`Sfn\HttpClient` need a PSR-7 implementation. It supports
+`Sfn\HttpClient` needs a PSR-7 implementation. It supports
 [Zend Diactoros](https://github.com/zendframework/zend-diactoros),
 [Guzzle](https://github.com/guzzle/psr7) and
 [Slim](https://github.com/slimphp/Slim-Http) at the moment.
@@ -33,6 +36,7 @@ look [here](https://github.com/http-interop/http-factory-diactoros/tree/master/s
 for PSR-17 Http Factory interfaces.
 
 ## Installation
+Install using [Composer](https://getcomposer.org/).
 ```
 composer require sfn/httpclient
 ```
@@ -90,7 +94,8 @@ $client = Sfn\HttpClient\ClientFactory::make($config);
 ```
 
 ### Send a request
-First of all, you must create a request with your preferred `Psr\Http\Message\RequestInterface` implementation. Then you simply call the
+First of all, you must create a request with your preferred
+`Psr\Http\Message\RequestInterface` implementation. Then you simply call the
 `send()` method of the client.
 ```php
 $request = (new Zend\Diactoros\Request())
@@ -104,7 +109,8 @@ $response = $client->send($request); // Return a ResponseInterface
 ### Helper methods for REST API
 There are `get()`, `post()`, `put()`, `delete()` and `patch()` helper methods.
 You can pass a second parameter, with an array of options.
-[Here](PARAMETERS.md#request-parameters) you can find a complete list of request parameters.
+[Here](PARAMETERS.md#request-parameters) you can find a complete list of request
+parameters.
 
 ```php
 // GET request
@@ -132,9 +138,11 @@ $client = Sfn\HttpClient\ClientFactory::make($config);
 $response = $client->get('path'); // GET http://api.example.com/path
 ```
 
-
 ## To-Do
 * Cookies support
 * SSL authentication
 * Examples
 * Better documentation
+
+## License
+[MIT License](LICENSE)
