@@ -100,4 +100,14 @@ class CurlClient extends AbstractHttpClient
     {
         return curl_setopt($this->curl, $optname, $optval);
     }
+
+    /**
+     * Close cURL handle on object destruct
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->curl)) {
+            curl_close($this->curl);
+        }
+    }
 }
