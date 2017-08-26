@@ -14,6 +14,8 @@ use Psr\Http\Message\RequestInterface;
 use Interop\Http\Factory\ResponseFactoryInterface;
 use Interop\Http\Factory\RequestFactoryInterface;
 use Interop\Http\Factory\UriFactoryInterface;
+use Sfn\HttpClient\Exception\ClientException;
+use Sfn\HttpClient\Exception\ServerException;
 
 abstract class AbstractHttpClient
 {
@@ -144,7 +146,6 @@ abstract class AbstractHttpClient
                 $request = $request->withHeader($header, $val);
             }
         }
-
         return $request;
     }
 
@@ -201,15 +202,9 @@ abstract class AbstractHttpClient
     {
         if(isset($this->config['baseuri'])){
             $uri = $this->config['baseuri'];
-
-            if (is_string($uri)) {
+            if (!$uri instanceof UriInterface) {
                 $this->config['baseuri'] =
                     $this->config['urifactory']->createUri($uri);
-            } elseif (!$uri instanceof UriInterface) {
-                throw new \InvalidArgumentException(sprintf(
-                    'URI must be a string or a UriInterface instance; received "%s"',
-                    (is_object($uri) ? get_class($uri) : gettype($uri))
-                ));
             }
         }
     }
@@ -226,6 +221,73 @@ abstract class AbstractHttpClient
                 $request = $request->withHeader($header, $val);
             }
         }
+        $contentlength = $request->getBody()->getSize();
+
+        if($contentlength!==null) {
+            $request = $request->withHeader('Content-Length', $contentlength);
+        }
         return $request;
+    }
+
+    /**
+     * Set request base uri
+     * @param RequestInterface $request
+     * @return RequestInterface
+     */
+    protected function setBaseUri(RequestInterface $request): RequestInterface
+    {
+        if (isset($this->config['baseuri'])) {
+            $uri = UriHelper::merge(
+                $this->config['baseuri'],
+                $request->getUri()
+            );
+            $request = $request->withUri($uri);
+        }
+        return $request;
+    }
+
+    /**
+     * Set the response headers
+     * @param ResponseInterface $response
+     * @param array $headers Headers
+     * @return ResponseInterface
+     */
+    protected function setResponseHeaders(
+        ResponseInterface $response,
+        array $headers=[]
+    ): ResponseInterface
+    {
+        $lines = count($headers);
+        for ($i=1; $i<$lines; $i++) {
+            $tmp = explode(': ', $headers[$i], 2);
+            $tmp[1] = explode('; ', $tmp[1]);
+            $response = $response->withAddedHeader($tmp[0], $tmp[1]);
+        }
+        return $response;
+    }
+
+    /**
+     * Check for response Exceptions
+     * @param ResponseInterface $response
+     * @param RequestInterface $request
+     * @throws ClientException|ServerException
+     */
+    protected function checkResponse(
+        ResponseInterface $response,
+        RequestInterface $request)
+    {
+        if ($response->getStatusCode()>=400) {
+            if($response->getStatusCode()<500) {
+                $exceptionclass = ClientException::class;
+            } else {
+                $exceptionclass = ServerException::class;
+            }
+            throw new $exceptionclass(
+                $response->getReasonPhrase(),
+                $response->getStatusCode(),
+                $request,
+                $response
+            );
+        }
     }
 }

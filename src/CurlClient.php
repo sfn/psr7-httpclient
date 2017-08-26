@@ -11,8 +11,6 @@ namespace Sfn\HttpClient;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
 use Sfn\HttpClient\Exception\ConnectionException;
-use Sfn\HttpClient\Exception\ClientException;
-use Sfn\HttpClient\Exception\ServerException;
 
 /**
  * Http client with cURL
@@ -48,29 +46,28 @@ class CurlClient extends AbstractHttpClient
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        if (isset($this->config['baseuri'])) {
-            $uri = UriHelper::merge(
-                $this->config['baseuri'],
-                $request->getUri()
-            );
-            $request = $request->withUri($uri);
-        }
-        else {
-            $uri = $request->getUri();
-        }
-
+        $request = $this->setBaseUri($request);
         $request = $this->setDefaultHeaders($request);
 
-        $this->setOption(CURLOPT_URL, (string) $uri);
+        $this->setOption(CURLOPT_URL, (string) $request->getUri());
         $this->setOption(CURLOPT_CUSTOMREQUEST, $request->getMethod());
         $this->setOption(CURLOPT_POSTFIELDS, (string) $request->getBody());
-        $this->setOption(CURLINFO_HEADER_OUT, true);
         $this->setOption(
             CURLOPT_HTTPHEADER,
             $this->parseHeader($request->getHeaders())
         );
 
-        $res = curl_exec($this->curl);
+        $header = [];
+        $this->setOption(
+            CURLOPT_HEADERFUNCTION,
+            function ($curl, $headerline) use (&$header) {
+                if(!empty(trim($headerline)))
+                    $header[] = trim($headerline);
+                return strlen($headerline);
+            }
+        );
+
+        $body = curl_exec($this->curl);
 
         if (curl_errno($this->curl)!=CURLE_OK) {
             throw new ConnectionException(
@@ -80,35 +77,15 @@ class CurlClient extends AbstractHttpClient
             );
         }
 
-        $info     = curl_getinfo($this->curl);
-        $header   = substr($res, 0, $info['header_size']);
-        $body     = substr($res, strlen($header));
-        $header   = preg_split("/\\r\\n|\\r|\\n/", trim($header));
-
+        $status     = (int) curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
         $response = $this->config['responsefactory']->createResponse();
-        $response = $response->withStatus($info['http_code']);
-
-        $lines = count($header);
-        for ($i=1; $i<$lines; $i++) {
-            $tmp = explode(':', $header[$i], 2);
-            $response = $response->withAddedHeader($tmp[0], $tmp[1]);
-        }
+        $response = $response->withStatus($status);
+        $response = $this->setResponseHeaders($response, $header);
 
         $response->getBody()->write($body);
+        $response->getBody()->seek(0);
 
-        if ($response->getStatusCode()>=400) {
-            if($response->getStatusCode()<500) {
-                $exceptionclass = ClientException::class;
-            } else {
-                $exceptionclass = ServerException::class;
-            }
-            throw new $exceptionclass(
-                $response->getReasonPhrase(),
-                $response->getStatusCode(),
-                $request,
-                $response
-            );
-        }
+        $this->checkResponse($response, $request);
 
         return $response;
     }
@@ -123,5 +100,4 @@ class CurlClient extends AbstractHttpClient
     {
         return curl_setopt($this->curl, $optname, $optval);
     }
-
 }

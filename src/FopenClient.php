@@ -11,8 +11,6 @@ namespace Sfn\HttpClient;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
 use Sfn\HttpClient\Exception\ConnectionException;
-use Sfn\HttpClient\Exception\ClientException;
-use Sfn\HttpClient\Exception\ServerException;
 
 /**
  * Http client via fopen
@@ -44,54 +42,35 @@ class FopenClient extends AbstractHttpClient
      */
     public function send(RequestInterface $request): ResponseInterface
     {
-        if (isset($this->config['baseuri'])) {
-            $uri = UriHelper::merge(
-                $this->config['baseuri'],
-                $request->getUri()
-            );
-            $request = $request->withUri($uri);
-        }
-        else {
-            $uri = $request->getUri();
-        }
-
+        $request = $this->setBaseUri($request);
         $request = $this->setDefaultHeaders($request);
 
         $this->httpContex['http']['method']  = $request->getMethod();
         $this->httpContex['http']['content'] = (string) $request->getBody();
         $this->httpContex['http']['header']  =
             implode("\r\n", $this->parseHeader($request->getHeaders()));
+
         $contex = stream_context_create($this->httpContex);
-        $body = @file_get_contents((string) $uri, false, $contex);
-        if ($body===false) {
+        $handle = @fopen((string) $request->getUri(), 'r', false, $contex);
+
+        if ($handle===false) {
             throw new ConnectionException('HTTP request failed', -1, $request);
         }
-        sscanf($http_response_header[0], 'HTTP/%*d.%*d %d', $status);
+
+        $meta   = stream_get_meta_data($handle);
+        $header = $meta['wrapper_data'];
+        $body   = stream_get_contents($handle);
+        fclose($handle);
+        sscanf($meta['wrapper_data'][0], 'HTTP/%*d.%*d %d', $status);
 
         $response = $this->config['responsefactory']->createResponse();
         $response = $response->withStatus($status);
-
-        $lines = count($http_response_header);
-        for ($i=1; $i<$lines; $i++) {
-            $tmp = explode(':', $http_response_header[$i], 2);
-            $response = $response->withAddedHeader($tmp[0], $tmp[1]);
-        }
+        $response = $this->setResponseHeaders($response, $header);
 
         $response->getBody()->write($body);
+        $response->getBody()->seek(0);
 
-        if ($response->getStatusCode()>=400) {
-            if($response->getStatusCode()<500) {
-                $exceptionclass = ClientException::class;
-            } else {
-                $exceptionclass = ServerException::class;
-            }
-            throw new $exceptionclass(
-                $response->getReasonPhrase(),
-                $response->getStatusCode(),
-                $request,
-                $response
-            );
-        }
+        $this->checkResponse($response, $request);
 
         return $response;
     }
