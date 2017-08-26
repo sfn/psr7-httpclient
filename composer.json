@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": "^7.0",
-        "psr/http-message": "~1.0",
+        "psr/http-message": "^1.0",
         "http-interop/http-factory": "^0.3.0"
     },
     "autoload": {
@@ -25,6 +25,7 @@
     "suggest": {
         "http-interop/http-factory-diactoros": "^0.3.0",
         "http-interop/http-factory-guzzle": "^0.3.1",
-        "http-interop/http-factory-slim": "^0.3.0"
+        "http-interop/http-factory-slim": "^0.3.0",
+        "tuupola/http-factory": "^0.3.0"
     }
 }
